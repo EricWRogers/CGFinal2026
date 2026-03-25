@@ -68,4 +68,17 @@ namespace Canis
         (void)_idSuffix;
         (void)_variable;
     }
+
+    void Editor::InputSceneAsset(const std::string& _name, Canis::SceneAssetHandle& _variable)
+    {
+        (void)_name;
+        (void)_variable;
+    }
+
+    void Editor::InputSceneAsset(const std::string& _name, const char* _idSuffix, Canis::SceneAssetHandle& _variable)
+    {
+        (void)_name;
+        (void)_idSuffix;
+        (void)_variable;
+    }
 }
