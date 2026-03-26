@@ -5,14 +5,27 @@
 class GenerateTerrain : public Canis::ScriptableEntity
 {
 private:
+    bool m_generated = false;
 
 public:
     static constexpr const char* ScriptName = "GenerateTerrain";
-    
-    Canis::SceneAssetHandle rockPrefab;
-    Canis::SceneAssetHandle icePrefab;
-    Canis::SceneAssetHandle goldPrefab;
-    Canis::SceneAssetHandle uraniumPrefab;
+
+    int seed = 1337;
+    int chunksX = 4;
+    int chunksZ = 4;
+    int chunkSize = 16;
+    int chunkHeight = 24;
+    int baseHeight = 6;
+    int maxHeightVariation = 10;
+    int surfaceIceHeight = 11;
+    float heightNoiseScale = 0.075f;
+    float detailNoiseScale = 0.16f;
+    float caveNoiseScale = 0.12f;
+
+    Canis::SceneAssetHandle rockDropPrefab = {};
+    Canis::SceneAssetHandle iceDropPrefab = {};
+    Canis::SceneAssetHandle goldDropPrefab = {};
+    Canis::SceneAssetHandle uraniumDropPrefab = {};
 
     GenerateTerrain(Canis::Entity &_entity) : Canis::ScriptableEntity(_entity) {}
 

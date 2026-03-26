@@ -200,13 +200,29 @@ namespace Canis
     class ModelAsset : public Asset
     {
     public:
-        struct Vertex3D
+        struct RenderVertex3D
         {
             Vector3 position = Vector3(0.0f);
             Vector3 normal = Vector3(0.0f, 1.0f, 0.0f);
             Vector2 uv = Vector2(0.0f);
+        };
+
+        struct SkinVertex3D
+        {
             Vector4 joints = Vector4(0.0f);
             Vector4 weights = Vector4(0.0f);
+        };
+
+        struct PrimitiveBuild3D
+        {
+            std::vector<RenderVertex3D> vertices = {};
+            std::vector<unsigned int> indices = {};
+            std::vector<SkinVertex3D> skinVertices = {};
+            i32 nodeIndex = -1;
+            i32 skinIndex = -1;
+            i32 materialSlot = -1;
+            i32 textureId = -1;
+            bool dynamicVertices = false;
         };
 
         struct Primitive3D
@@ -214,14 +230,16 @@ namespace Canis
             unsigned int vao = 0;
             unsigned int vbo = 0;
             unsigned int ebo = 0;
-            std::vector<Vertex3D> bindVertices = {};
-            std::vector<Vertex3D> skinnedVertices = {};
+            std::vector<RenderVertex3D> bindVertices = {};
+            std::vector<RenderVertex3D> skinnedVertices = {};
+            std::vector<SkinVertex3D> skinVertices = {};
             std::vector<unsigned int> indices = {};
             i32 nodeIndex = -1;
             i32 skinIndex = -1;
             i32 materialSlot = -1;
             i32 textureId = -1;
             bool hasSkinning = false;
+            bool dynamicVertices = false;
         };
 
         struct Node3D
@@ -278,7 +296,7 @@ namespace Canis
         {
             std::vector<Matrix4> localNodeMatrices = {};
             std::vector<Matrix4> globalNodeMatrices = {};
-            std::vector<std::vector<Vertex3D>> skinnedVertices = {};
+            std::vector<std::vector<RenderVertex3D>> skinnedVertices = {};
             std::vector<std::vector<Matrix4>> skinMatricesScratch = {};
             std::vector<Vector3> translationsScratch = {};
             std::vector<Vector4> rotationsScratch = {};
@@ -289,6 +307,9 @@ namespace Canis
 
         bool Load(std::string _path) override;
         bool Free() override;
+        bool SetRuntimePrimitives(
+            const std::vector<PrimitiveBuild3D> &_primitives,
+            const std::vector<std::string> &_materialSlotNames = {});
 
         bool UpdateAnimation(i32 _clipIndex, float _timeSeconds);
         bool UpdateAnimation(Pose3D &_pose, i32 _clipIndex, float _timeSeconds) const;
@@ -309,6 +330,8 @@ namespace Canis
         std::string GetMaterialSlotName(i32 _index) const;
 
         std::string GetPath() const { return m_path; }
+        u64 GetGeometryRevision() const { return m_geometryRevision; }
+        bool BuildTriangleMesh(std::vector<Vector3> &_vertices, std::vector<u32> &_indices) const;
 
     private:
         std::string m_path = "";
@@ -323,10 +346,13 @@ namespace Canis
         std::vector<Vector3> m_bindScales = {};
         std::vector<Matrix4> m_bindLocalMatrices = {};
         Pose3D m_sharedPose = {};
+        u64 m_geometryRevision = 0u;
 
         void EnsurePose(Pose3D &_pose) const;
         void VisitNodeRecursive(i32 _nodeIndex, const Matrix4 &_parentMatrix, Pose3D &_pose, std::vector<bool> &_visited) const;
         void UpdateGlobalMatrices(Pose3D &_pose) const;
         void UpdateSkinning(Pose3D &_pose) const;
+        void FreePrimitives();
+        bool UploadPrimitive(Primitive3D &_primitive) const;
     };
 } // end of Canis namespace

@@ -31,13 +31,15 @@ std::string GoldBlock::GetName()
     return "Gold Block";
 }
 
-std::string GoldBlock::GetMessage(Canis::Entity* _interactingEntity)
+std::string GoldBlock::GetMessage(const InteractionContext &_context)
 {
+    (void)_context;
     return std::string("Left Click to Break ") + GetName();
 }
 
-bool GoldBlock::HandleInteraction(Canis::Entity* _interactingEntity)
+bool GoldBlock::HandleInteraction(const InteractionContext &_context)
 {
+    (void)_context;
     InputManager& input = entity.scene.GetInputManager();
     if (!input.LeftClickReleased())
         return false;

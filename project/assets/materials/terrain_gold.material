@@ -1,0 +1,7 @@
+shader:
+  uuid: 6400860063539446878
+color: [0.76, 0.7429412, 0.17999999, 1]
+backFaceCulling: true
+specularValue: 0.05
+roughnessValue: 0.25
+metallicValue: 0.18

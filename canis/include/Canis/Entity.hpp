@@ -995,6 +995,26 @@ namespace Canis
         std::vector<Entity*> stayed = {};
     };
 
+    struct MeshCollider
+    {
+    public:
+        static constexpr const char* ScriptName = "Canis::MeshCollider";
+
+        MeshCollider() = default;
+        explicit MeshCollider(Canis::Entity& _entity) : entity(&_entity) {}
+        Entity* entity = nullptr;
+
+        void Create() {}
+
+        bool active = true;
+        bool useAttachedModel = true;
+        i32 modelId = -1;
+        std::string modelPath = "";
+        std::vector<Entity*> entered = {};
+        std::vector<Entity*> exited = {};
+        std::vector<Entity*> stayed = {};
+    };
+
     struct Camera
     {
     public:

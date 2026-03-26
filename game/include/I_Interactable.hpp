@@ -4,12 +4,19 @@
 namespace Canis
 {
     class Entity;
+    struct RaycastHit;
 }
+
+struct InteractionContext
+{
+    Canis::Entity* interactingEntity = nullptr;
+    const Canis::RaycastHit* hit = nullptr;
+};
 
 class I_Interactable
 {
 public:
     virtual ~I_Interactable() = default;
-    virtual std::string GetMessage(Canis::Entity* _interactingEntity) = 0;
-    virtual bool HandleInteraction(Canis::Entity* _interactingEntity) = 0; // return true if interacted with
+    virtual std::string GetMessage(const InteractionContext &_context) = 0;
+    virtual bool HandleInteraction(const InteractionContext &_context) = 0; // return true if interacted with
 };

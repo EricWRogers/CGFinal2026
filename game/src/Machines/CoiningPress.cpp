@@ -54,8 +54,9 @@ void CoiningPress::Update(float _dt) {
     }
 }
 
-std::string CoiningPress::GetMessage(Canis::Entity* _interactingEntity)
+std::string CoiningPress::GetMessage(const InteractionContext &_context)
 {
+    (void)_context;
     std::string message = "Left Click to add Gold.";
 
     if (timeLeft > 0.0f)
@@ -64,16 +65,16 @@ std::string CoiningPress::GetMessage(Canis::Entity* _interactingEntity)
     return message;
 }
 
-bool CoiningPress::HandleInteraction(Canis::Entity* _interactingEntity)
+bool CoiningPress::HandleInteraction(const InteractionContext &_context)
 {
     InputManager& input = entity.scene.GetInputManager();
     if (!input.LeftClickReleased())
         return false;
 
-    if (_interactingEntity == nullptr)
+    if (_context.interactingEntity == nullptr)
         return false;
 
-    if (SuperPupUtilities::Inventory* inventory = _interactingEntity->GetScript<SuperPupUtilities::Inventory>())
+    if (SuperPupUtilities::Inventory* inventory = _context.interactingEntity->GetScript<SuperPupUtilities::Inventory>())
     {
         if (inventory->Remove("Gold", 1))
         {

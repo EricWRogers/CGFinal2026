@@ -1,5 +1,6 @@
 #include <Canis/ECS/Systems/JoltPhysics3DSystem.hpp>
 
+#include <Canis/AssetManager.hpp>
 #include <Canis/Debug.hpp>
 #include <Canis/Entity.hpp>
 #include <Canis/Math.hpp>
@@ -21,6 +22,7 @@
 #include <Jolt/Physics/Collision/ObjectLayer.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
+#include <Jolt/Physics/Collision/Shape/MeshShape.h>
 #include <Jolt/Physics/Collision/Shape/Shape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/PhysicsSystem.h>
@@ -280,7 +282,35 @@ namespace Canis
             _transform.rotation = _worldRotation;
         }
 
-        size_t BuildSettingsHash(const Transform &_transform, const Rigidbody &_rigidbody, const BoxCollider *_boxCollider, const SphereCollider *_sphereCollider, const CapsuleCollider *_capsuleCollider)
+        i32 ResolveMeshColliderModelId(entt::registry &_registry, entt::entity _entityHandle, const MeshCollider *_meshCollider)
+        {
+            if (_meshCollider == nullptr)
+                return -1;
+
+            if (_meshCollider->modelId >= 0)
+                return _meshCollider->modelId;
+
+            if (!_meshCollider->modelPath.empty())
+                return AssetManager::LoadModel(_meshCollider->modelPath);
+
+            if (_meshCollider->useAttachedModel)
+            {
+                if (const Model *model = _registry.try_get<Model>(_entityHandle))
+                    return model->modelId;
+            }
+
+            return -1;
+        }
+
+        size_t BuildSettingsHash(
+            entt::registry &_registry,
+            entt::entity _entityHandle,
+            const Transform &_transform,
+            const Rigidbody &_rigidbody,
+            const BoxCollider *_boxCollider,
+            const SphereCollider *_sphereCollider,
+            const CapsuleCollider *_capsuleCollider,
+            const MeshCollider *_meshCollider)
         {
             size_t hash = 0;
             hash = HashCombine(hash, std::hash<int>{}(_rigidbody.motionType));
@@ -315,6 +345,18 @@ namespace Canis
                 hash = HashCombine(hash, std::hash<float>{}(_capsuleCollider->halfHeight));
                 hash = HashCombine(hash, std::hash<float>{}(_capsuleCollider->radius));
             }
+            else if (_meshCollider != nullptr)
+            {
+                hash = HashCombine(hash, 104u);
+                hash = HashCombine(hash, std::hash<bool>{}(_meshCollider->active));
+                hash = HashCombine(hash, std::hash<bool>{}(_meshCollider->useAttachedModel));
+                hash = HashCombine(hash, std::hash<std::string>{}(_meshCollider->modelPath));
+
+                const i32 modelId = ResolveMeshColliderModelId(_registry, _entityHandle, _meshCollider);
+                hash = HashCombine(hash, std::hash<int>{}(modelId));
+                if (const ModelAsset *model = AssetManager::GetModel(modelId))
+                    hash = HashCombine(hash, std::hash<u64>{}(model->GetGeometryRevision()));
+            }
             else
             {
                 hash = HashCombine(hash, 100u);
@@ -323,7 +365,14 @@ namespace Canis
             return hash;
         }
 
-        JPH::RefConst<JPH::Shape> BuildShape(const Transform &_transform, const BoxCollider *_boxCollider, const SphereCollider *_sphereCollider, const CapsuleCollider *_capsuleCollider)
+        JPH::RefConst<JPH::Shape> BuildShape(
+            entt::registry &_registry,
+            entt::entity _entityHandle,
+            const Transform &_transform,
+            const BoxCollider *_boxCollider,
+            const SphereCollider *_sphereCollider,
+            const CapsuleCollider *_capsuleCollider,
+            const MeshCollider *_meshCollider)
         {
             const Vector3 globalScale = glm::abs(_transform.GetGlobalScale());
 
@@ -369,6 +418,47 @@ namespace Canis
                 return shapeResult.Get();
             }
 
+            if (_meshCollider != nullptr)
+            {
+                const i32 modelId = ResolveMeshColliderModelId(_registry, _entityHandle, _meshCollider);
+                const ModelAsset *model = AssetManager::GetModel(modelId);
+                if (model == nullptr)
+                {
+                    Debug::Log("Jolt MeshCollider shape error: no source model for entity.");
+                    return nullptr;
+                }
+
+                std::vector<Vector3> vertices = {};
+                std::vector<u32> indices = {};
+                if (!model->BuildTriangleMesh(vertices, indices) || indices.size() < 3)
+                {
+                    Debug::Log("Jolt MeshCollider shape error: source model has no triangle mesh.");
+                    return nullptr;
+                }
+
+                JPH::TriangleList triangles;
+                triangles.reserve(indices.size() / 3u);
+                for (size_t i = 0; i + 2 < indices.size(); i += 3)
+                {
+                    const Vector3 &v0 = vertices[indices[i + 0]];
+                    const Vector3 &v1 = vertices[indices[i + 1]];
+                    const Vector3 &v2 = vertices[indices[i + 2]];
+                    triangles.push_back(JPH::Triangle(
+                        JPH::Float3(v0.x * globalScale.x, v0.y * globalScale.y, v0.z * globalScale.z),
+                        JPH::Float3(v1.x * globalScale.x, v1.y * globalScale.y, v1.z * globalScale.z),
+                        JPH::Float3(v2.x * globalScale.x, v2.y * globalScale.y, v2.z * globalScale.z)));
+                }
+
+                JPH::MeshShapeSettings shapeSettings(triangles);
+                JPH::Shape::ShapeResult shapeResult = shapeSettings.Create();
+                if (shapeResult.HasError())
+                {
+                    Debug::Log("Jolt MeshCollider shape error: %s", shapeResult.GetError().c_str());
+                    return nullptr;
+                }
+                return shapeResult.Get();
+            }
+
             return nullptr;
         }
 
@@ -403,6 +493,9 @@ namespace Canis
             if (CapsuleCollider *capsuleCollider = _registry.try_get<CapsuleCollider>(_entityHandle))
                 return capsuleCollider->entity;
 
+            if (MeshCollider *meshCollider = _registry.try_get<MeshCollider>(_entityHandle))
+                return meshCollider->entity;
+
             return nullptr;
         }
 
@@ -424,6 +517,7 @@ namespace Canis
             ClearColliderContactVectors<BoxCollider>(_registry);
             ClearColliderContactVectors<SphereCollider>(_registry);
             ClearColliderContactVectors<CapsuleCollider>(_registry);
+            ClearColliderContactVectors<MeshCollider>(_registry);
         }
 
         template <typename Func>
@@ -437,6 +531,9 @@ namespace Canis
 
             if (CapsuleCollider *capsuleCollider = _registry.try_get<CapsuleCollider>(_entityHandle))
                 _func(*capsuleCollider);
+
+            if (MeshCollider *meshCollider = _registry.try_get<MeshCollider>(_entityHandle))
+                _func(*meshCollider);
         }
     } // namespace
 
@@ -814,6 +911,7 @@ namespace Canis
             BoxCollider *boxCollider = _registry.try_get<BoxCollider>(_entityHandle);
             SphereCollider *sphereCollider = _registry.try_get<SphereCollider>(_entityHandle);
             CapsuleCollider *capsuleCollider = _registry.try_get<CapsuleCollider>(_entityHandle);
+            MeshCollider *meshCollider = _registry.try_get<MeshCollider>(_entityHandle);
 
             if (boxCollider != nullptr && !boxCollider->active)
                 boxCollider = nullptr;
@@ -821,14 +919,24 @@ namespace Canis
                 sphereCollider = nullptr;
             if (capsuleCollider != nullptr && !capsuleCollider->active)
                 capsuleCollider = nullptr;
+            if (meshCollider != nullptr && !meshCollider->active)
+                meshCollider = nullptr;
 
-            if (boxCollider == nullptr && sphereCollider == nullptr && capsuleCollider == nullptr)
+            if (boxCollider == nullptr && sphereCollider == nullptr && capsuleCollider == nullptr && meshCollider == nullptr)
             {
                 RemoveBody(_entityHandle);
                 return false;
             }
 
-            const size_t settingsHash = BuildSettingsHash(*transform, *rigidbody, boxCollider, sphereCollider, capsuleCollider);
+            const size_t settingsHash = BuildSettingsHash(
+                _registry,
+                _entityHandle,
+                *transform,
+                *rigidbody,
+                boxCollider,
+                sphereCollider,
+                capsuleCollider,
+                meshCollider);
             auto bodyIt = bodies.find(_entityHandle);
             const bool needsRecreate = (bodyIt == bodies.end()) || (bodyIt->second.settingsHash != settingsHash);
 
@@ -838,7 +946,14 @@ namespace Canis
             if (bodyIt != bodies.end())
                 RemoveBodyFromWorld(bodyIt->second.bodyID);
 
-            JPH::RefConst<JPH::Shape> shape = BuildShape(*transform, boxCollider, sphereCollider, capsuleCollider);
+            JPH::RefConst<JPH::Shape> shape = BuildShape(
+                _registry,
+                _entityHandle,
+                *transform,
+                boxCollider,
+                sphereCollider,
+                capsuleCollider,
+                meshCollider);
             if (shape == nullptr)
             {
                 RemoveBody(_entityHandle);

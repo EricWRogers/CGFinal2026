@@ -154,11 +154,15 @@ void PlayerController::Update(float _dt)
                 message = block->GetName();
 
             if (I_Interactable* interactable = scannerHit.entity->GetScript<I_Interactable>()) {
-                message = interactable->GetMessage(&entity);
+                const InteractionContext interactionContext = {
+                    .interactingEntity = &entity,
+                    .hit = &scannerHit,
+                };
+                message = interactable->GetMessage(interactionContext);
                 if (Entity* info = entity.scene.GetEntityWithTag("INFO_TEXT")) {
                     if (InfoText* infoText = info->GetScript<InfoText>())
                     {
-                        interacted = interactable->HandleInteraction(&entity);
+                        interacted = interactable->HandleInteraction(interactionContext);
                         if (interacted == false) {
                             infoText->SetText(message);
                         }

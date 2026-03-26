@@ -802,7 +802,8 @@ namespace Canis
 
                 if (!_entity.HasComponent<BoxCollider>()
                     && !_entity.HasComponent<SphereCollider>()
-                    && !_entity.HasComponent<CapsuleCollider>())
+                    && !_entity.HasComponent<CapsuleCollider>()
+                    && !_entity.HasComponent<MeshCollider>())
                 {
                     _entity.AddComponent<BoxCollider>();
                 }
@@ -911,6 +912,7 @@ namespace Canis
 
                 _entity.RemoveComponent<SphereCollider>();
                 _entity.RemoveComponent<CapsuleCollider>();
+                _entity.RemoveComponent<MeshCollider>();
                 _entity.AddComponent<BoxCollider>();
             },
             .Has = [this](Entity &_entity) -> bool { return _entity.HasComponent<BoxCollider>(); },
@@ -961,6 +963,7 @@ namespace Canis
 
                 _entity.RemoveComponent<BoxCollider>();
                 _entity.RemoveComponent<CapsuleCollider>();
+                _entity.RemoveComponent<MeshCollider>();
                 _entity.AddComponent<SphereCollider>();
             },
             .Has = [this](Entity &_entity) -> bool { return _entity.HasComponent<SphereCollider>(); },
@@ -1011,6 +1014,7 @@ namespace Canis
 
                 _entity.RemoveComponent<BoxCollider>();
                 _entity.RemoveComponent<SphereCollider>();
+                _entity.RemoveComponent<MeshCollider>();
                 _entity.AddComponent<CapsuleCollider>();
             },
             .Has = [this](Entity &_entity) -> bool { return _entity.HasComponent<CapsuleCollider>(); },
@@ -1054,6 +1058,69 @@ namespace Canis
         };
 
         RegisterScript(capsuleColliderConf);
+
+        ScriptConf meshColliderConf = {
+            .name = "Canis::MeshCollider",
+            .Construct = nullptr,
+            .Add = [this](Entity &_entity) -> void {
+                if (!_entity.HasComponent<Transform>())
+                    _entity.AddComponent<Transform>();
+
+                _entity.RemoveComponent<BoxCollider>();
+                _entity.RemoveComponent<SphereCollider>();
+                _entity.RemoveComponent<CapsuleCollider>();
+                _entity.AddComponent<MeshCollider>();
+            },
+            .Has = [this](Entity &_entity) -> bool { return _entity.HasComponent<MeshCollider>(); },
+            .Remove = [this](Entity &_entity) -> void { _entity.RemoveComponent<MeshCollider>(); },
+            .Get = [this](Entity &_entity) -> void* { return _entity.HasComponent<MeshCollider>() ? (void*)(&_entity.GetComponent<MeshCollider>()) : nullptr; },
+            .Encode = [](YAML::Node &_node, Entity &_entity) -> void {
+                if (MeshCollider *meshCollider = _entity.HasComponent<MeshCollider>() ? &_entity.GetComponent<MeshCollider>() : nullptr)
+                {
+                    YAML::Node comp;
+                    comp["active"] = meshCollider->active;
+                    comp["useAttachedModel"] = meshCollider->useAttachedModel;
+                    if (!meshCollider->modelPath.empty())
+                        comp["modelPath"] = meshCollider->modelPath;
+                    _node["Canis::MeshCollider"] = comp;
+                }
+            },
+            .Decode = [](YAML::Node &_node, Entity &_entity, bool _callCreate) -> void {
+                YAML::Node comp = _node["Canis::MeshCollider"];
+                if (!comp)
+                    comp = _node["Canis::MeshCollider"];
+
+                if (comp)
+                {
+                    auto &meshCollider = *_entity.AddComponent<MeshCollider>();
+                    meshCollider.active = comp["active"].as<bool>(true);
+                    meshCollider.useAttachedModel = comp["useAttachedModel"].as<bool>(true);
+                    meshCollider.modelPath = comp["modelPath"].as<std::string>("");
+                    meshCollider.modelId = -1;
+                    if (!meshCollider.modelPath.empty())
+                        meshCollider.modelId = AssetManager::LoadModel(meshCollider.modelPath);
+                    if (_callCreate)
+                        meshCollider.Create();
+                }
+            },
+            .DrawInspector = [this](Editor &_editor, Entity &_entity, const ScriptConf &_conf) -> void {
+                (void)_editor;
+                MeshCollider *meshCollider = _entity.HasComponent<MeshCollider>() ? &_entity.GetComponent<MeshCollider>() : nullptr;
+                if (meshCollider == nullptr)
+                    return;
+
+                ImGui::Checkbox(("active##" + _conf.name).c_str(), &meshCollider->active);
+                ImGui::Checkbox(("useAttachedModel##" + _conf.name).c_str(), &meshCollider->useAttachedModel);
+                std::string modelPath = meshCollider->modelPath;
+                if (ImGui::InputText(("modelPath##" + _conf.name).c_str(), &modelPath))
+                {
+                    meshCollider->modelPath = modelPath;
+                    meshCollider->modelId = meshCollider->modelPath.empty() ? -1 : AssetManager::LoadModel(meshCollider->modelPath);
+                }
+            },
+        };
+
+        RegisterScript(meshColliderConf);
 
         ScriptConf cameraConf = {
             .name = "Canis::Camera",

@@ -32,16 +32,17 @@ std::string Gold::GetName() {
     return "Gold";
 }
 
-std::string Gold::GetMessage(Canis::Entity* _interactingEntity) {
+std::string Gold::GetMessage(const InteractionContext &_context) {
+    (void)_context;
     return std::string("Press E to Pickup ") + ScriptName;
 }
 
-bool Gold::HandleInteraction(Canis::Entity* _interactingEntity) {
+bool Gold::HandleInteraction(const InteractionContext &_context) {
     InputManager& input = entity.scene.GetInputManager();
 
     if (input.GetKey(Key::E)) {
-        if (_interactingEntity != nullptr)
-            if (SuperPupUtilities::Inventory* inventory = _interactingEntity->GetScript<SuperPupUtilities::Inventory>())
+        if (_context.interactingEntity != nullptr)
+            if (SuperPupUtilities::Inventory* inventory = _context.interactingEntity->GetScript<SuperPupUtilities::Inventory>())
                 inventory->Add(*this, 1);
 
         entity.Destroy();

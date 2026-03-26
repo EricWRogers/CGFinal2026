@@ -253,7 +253,7 @@ namespace Canis
             break;
         }
 
-        bool usePointLight = true;
+        bool usePointLight = false;
         Vector3 pointLightPosition = Vector3(2.0f, 2.5f, 2.0f);
         Vector3 pointLightColor = Vector3(1.0f, 0.95f, 0.85f);
         float pointLightIntensity = 1.2f;

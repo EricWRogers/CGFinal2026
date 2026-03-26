@@ -25,7 +25,7 @@ Entities:
     Canis::DirectionalLight:
       enabled: true
       color: [1, 0.97, 0.92, 1]
-      intensity: 5
+      intensity: 1.8
       direction: [-0.35, -1, -0.2]
   - Entity: 910010
     Name: Ground
@@ -232,178 +232,6 @@ Entities:
       ModelAsset:
         path: assets/defaults/models/cube.glb
         uuid: 17154083321347000101
-  - Entity: 910100
-    Name: Rock_Block
-    Tag: ""
-    Canis::Transform:
-      active: true
-      position: [-6, 0.8, -6]
-      rotation: [0, 0, 0]
-      scale: [1, 1, 1]
-      parent: 0
-      children:
-        []
-    Canis::Rigidbody:
-      active: true
-      motionType: 0
-      mass: 1
-      friction: 0.2
-      restitution: 0
-      linearDamping: 0.05
-      angularDamping: 0.05
-      useGravity: false
-      isSensor: false
-      layer: 5
-      mask: 4294967295
-      allowSleeping: false
-      lockRotationX: false
-      lockRotationY: false
-      lockRotationZ: false
-      linearVelocity: [0, 0, 0]
-      angularVelocity: [0, 0, 0]
-    Canis::BoxCollider:
-      active: true
-      size: [1, 1, 1]
-    Canis::Material:
-      color: [0.18627453, 0.18262209, 0.16435988, 1]
-      MaterialAsset:
-        uuid: 17490362529814420531
-    Canis::Model:
-      color: [0.51960784, 0.50729686, 0.44574204, 1]
-      ModelAsset:
-        path: assets/defaults/models/cube.glb
-        uuid: 17154083321347000101
-    RockBlock:
-      dropPrefab: assets/prefabs/rock_item.scene
-  - Entity: 910101
-    Name: Gold_Block
-    Tag: ""
-    Canis::Transform:
-      active: true
-      position: [-6.550449, 0.8, 0.5341009]
-      rotation: [0, -0, 0]
-      scale: [1, 1, 1]
-      parent: 0
-      children:
-        []
-    Canis::Rigidbody:
-      active: true
-      motionType: 0
-      mass: 1
-      friction: 0.2
-      restitution: 0
-      linearDamping: 0.05
-      angularDamping: 0.05
-      useGravity: false
-      isSensor: false
-      layer: 5
-      mask: 4294967295
-      allowSleeping: false
-      lockRotationX: false
-      lockRotationY: false
-      lockRotationZ: false
-      linearVelocity: [0, 0, 0]
-      angularVelocity: [0, 0, 0]
-    Canis::BoxCollider:
-      active: true
-      size: [1, 1, 1]
-    Canis::Material:
-      color: [1, 0.87, 0.22, 1]
-      MaterialAsset:
-        uuid: 17490362529814420531
-    Canis::Model:
-      color: [1, 0.87, 0.22, 1]
-      ModelAsset:
-        path: assets/defaults/models/cube.glb
-        uuid: 17154083321347000101
-    GoldBlock:
-      dropPrefab: assets/prefabs/gold_ore_item.scene
-  - Entity: 910102
-    Name: Uranium_Block
-    Tag: ""
-    Canis::Transform:
-      active: true
-      position: [6, 0.8, -6]
-      rotation: [0, 0, 0]
-      scale: [1, 1, 1]
-      parent: 0
-      children:
-        []
-    Canis::Rigidbody:
-      active: true
-      motionType: 0
-      mass: 1
-      friction: 0.2
-      restitution: 0
-      linearDamping: 0.05
-      angularDamping: 0.05
-      useGravity: false
-      isSensor: false
-      layer: 5
-      mask: 4294967295
-      allowSleeping: false
-      lockRotationX: false
-      lockRotationY: false
-      lockRotationZ: false
-      linearVelocity: [0, 0, 0]
-      angularVelocity: [0, 0, 0]
-    Canis::BoxCollider:
-      active: true
-      size: [1, 1, 1]
-    Canis::Material:
-      color: [0.058823466, 1, 0, 1]
-      MaterialAsset:
-        uuid: 17490362529814420531
-    Canis::Model:
-      color: [1, 0.87, 0.22, 1]
-      ModelAsset:
-        path: assets/defaults/models/cube.glb
-        uuid: 17154083321347000101
-    UraniumBlock:
-      dropPrefab: assets/prefabs/uranium_item.scene
-  - Entity: 910103
-    Name: Ice_Block
-    Tag: ""
-    Canis::Transform:
-      active: true
-      position: [6, 0.8, 0]
-      rotation: [0, 0, 0]
-      scale: [1, 1, 1]
-      parent: 0
-      children:
-        []
-    Canis::Rigidbody:
-      active: true
-      motionType: 0
-      mass: 1
-      friction: 0.2
-      restitution: 0
-      linearDamping: 0.05
-      angularDamping: 0.05
-      useGravity: false
-      isSensor: false
-      layer: 5
-      mask: 4294967295
-      allowSleeping: false
-      lockRotationX: false
-      lockRotationY: false
-      lockRotationZ: false
-      linearVelocity: [0, 0, 0]
-      angularVelocity: [0, 0, 0]
-    Canis::BoxCollider:
-      active: true
-      size: [1, 1, 1]
-    Canis::Material:
-      color: [0.55, 0.85, 1, 1]
-      MaterialAsset:
-        uuid: 17490362529814420531
-    Canis::Model:
-      color: [0.55, 0.85, 1, 1]
-      ModelAsset:
-        path: assets/defaults/models/cube.glb
-        uuid: 17154083321347000101
-    IceBlock:
-      dropPrefab: assets/prefabs/ice_item.scene
   - Entity: 7448487586354055887
     Name: BoostPad
     Tag: ""
@@ -481,7 +309,7 @@ Entities:
     Tag: Player
     Canis::Transform:
       active: true
-      position: [0, 1.7835209, 0]
+      position: [0, 15, 0]
       rotation: [0, -0, 0]
       scale: [1, 1, 1]
       parent: 0
@@ -691,14 +519,25 @@ Entities:
     Tag: ""
     Canis::Transform:
       active: true
-      position: [0, 0, 0]
+      position: [-32, -10, -32]
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
       parent: 0
       children:
         []
     GenerateTerrain:
-      rockPrefab: assets/prefabs/rock_block.scene
-      icePrefab: assets/prefabs/ice_block.scene
-      goldPrefab: assets/prefabs/gold_block.scene
-      uraniumPrefab: assets/prefabs/uranium_block.scene
+      seed: 1337
+      chunksX: 4
+      chunksZ: 4
+      chunkSize: 16
+      chunkHeight: 24
+      baseHeight: 6
+      maxHeightVariation: 10
+      surfaceIceHeight: 11
+      heightNoiseScale: 0.075
+      detailNoiseScale: 0.16
+      caveNoiseScale: 0.12
+      rockDropPrefab: assets/prefabs/rock_item.scene
+      iceDropPrefab: assets/prefabs/ice_item.scene
+      goldDropPrefab: assets/prefabs/gold_ore_item.scene
+      uraniumDropPrefab: assets/prefabs/uranium_item.scene

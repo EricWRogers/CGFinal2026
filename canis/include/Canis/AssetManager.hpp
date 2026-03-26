@@ -134,6 +134,8 @@ namespace Canis
         SpriteAnimationAsset* GetSpriteAnimation(i32 _animationID);
 
         int LoadModel(const std::string &_path);
+        int CreateModel();
+        void FreeModel(i32 _modelID);
         ModelAsset* GetModel(const std::string &_path);
         ModelAsset* GetModel(i32 _modelID);
 

@@ -405,12 +405,44 @@ namespace Canis
                 return -1;
             }
 
-            int id = assetLibrary.nextId;
+            const int id = assetLibrary.nextId++;
             assetLibrary.assets[id] = model;
             assetLibrary.assetPath[_path] = id;
-            assetLibrary.nextId++;
 
             return id;
+        }
+
+        int CreateModel()
+        {
+            auto &assetLibrary = GetAssetLibrary();
+
+            const int id = assetLibrary.nextId++;
+            assetLibrary.assets[id] = new ModelAsset();
+            return id;
+        }
+
+        void FreeModel(i32 _modelID)
+        {
+            auto &assetLibrary = GetAssetLibrary();
+            auto assetIt = assetLibrary.assets.find(_modelID);
+            if (assetIt == assetLibrary.assets.end())
+                return;
+
+            for (auto pathIt = assetLibrary.assetPath.begin(); pathIt != assetLibrary.assetPath.end();)
+            {
+                if (pathIt->second == _modelID)
+                    pathIt = assetLibrary.assetPath.erase(pathIt);
+                else
+                    ++pathIt;
+            }
+
+            if (Asset *asset = static_cast<Asset *>(assetIt->second))
+            {
+                asset->Free();
+                delete asset;
+            }
+
+            assetLibrary.assets.erase(assetIt);
         }
 
         ModelAsset* GetModel(const std::string &_path)

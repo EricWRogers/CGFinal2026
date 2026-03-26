@@ -21,8 +21,8 @@ public:
     std::string GetName() override;
 
     // I_Interactable
-    std::string GetMessage(Canis::Entity* _interactingEntity) override;
-    bool HandleInteraction(Canis::Entity* _interactingEntity) override;
+    std::string GetMessage(const InteractionContext &_context) override;
+    bool HandleInteraction(const InteractionContext &_context) override;
 };
 
 extern void RegisterGoldScript(Canis::App& _app);

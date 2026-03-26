@@ -23,8 +23,8 @@ public:
     void Destroy();
     void Update(float _dt);
 
-    std::string GetMessage(Canis::Entity* _interactingEntity) override;
-    bool HandleInteraction(Canis::Entity* _interactingEntity) override;
+    std::string GetMessage(const InteractionContext &_context) override;
+    bool HandleInteraction(const InteractionContext &_context) override;
 };
 
 extern void RegisterFurnaceScript(Canis::App& _app);

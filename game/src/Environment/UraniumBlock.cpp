@@ -31,13 +31,15 @@ std::string UraniumBlock::GetName()
     return "Uranium Block";
 }
 
-std::string UraniumBlock::GetMessage(Canis::Entity* _interactingEntity)
+std::string UraniumBlock::GetMessage(const InteractionContext &_context)
 {
+    (void)_context;
     return std::string("Left Click to Break ") + GetName();
 }
 
-bool UraniumBlock::HandleInteraction(Canis::Entity* _interactingEntity)
+bool UraniumBlock::HandleInteraction(const InteractionContext &_context)
 {
+    (void)_context;
     InputManager& input = entity.scene.GetInputManager();
     if (!input.LeftClickReleased())
         return false;
