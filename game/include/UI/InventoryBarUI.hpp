@@ -40,6 +40,7 @@ private:
     void UpdateVisuals();
     SuperPupUtilities::Inventory* GetInventory() const;
     Canis::Color GetItemColor(const std::string& _itemName) const;
+    Canis::Color GetSlotColor(bool _selected) const;
 };
 
 extern void RegisterInventoryBarUIScript(Canis::App& _app);

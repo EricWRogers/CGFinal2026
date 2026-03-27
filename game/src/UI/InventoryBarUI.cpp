@@ -171,6 +171,7 @@ void InventoryBarUI::UpdateVisuals()
 {
     SuperPupUtilities::Inventory* inventory = GetInventory();
     const int inventorySlots = (inventory == nullptr) ? 0 : inventory->GetSlotCount();
+    const int selectedSlot = (inventory == nullptr) ? -1 : inventory->GetSelectedSlotIndex();
 
     for (int i = 0; i < static_cast<int>(m_slots.size()); i++)
     {
@@ -195,7 +196,7 @@ void InventoryBarUI::UpdateVisuals()
             const std::string itemName = inventory->GetSlotName(i);
             const int itemCount = inventory->GetSlotItemCount(i);
 
-            slotBackground.color = Canis::Color(0.14f, 0.17f, 0.21f, 0.95f);
+            slotBackground.color = GetSlotColor(i == selectedSlot);
             iconSprite.color = GetItemColor(itemName);
             countText.SetText(std::to_string(itemCount));
             countText.color = Canis::Color(1.0f);
@@ -228,6 +229,20 @@ Canis::Color InventoryBarUI::GetItemColor(const std::string& _itemName) const
         return Canis::Color(0.97f, 0.84f, 0.16f, 1.0f);
     if (_itemName == "Uranium")
         return Canis::Color(0.39f, 0.98f, 0.41f, 1.0f);
+    if (_itemName == "Furnace")
+        return Canis::Color(0.92f, 0.46f, 0.24f, 1.0f);
+    if (_itemName == "Coining Press")
+        return Canis::Color(0.24f, 0.78f, 0.74f, 1.0f);
+    if (_itemName == "Jump Pad")
+        return Canis::Color(0.47f, 0.86f, 0.26f, 1.0f);
 
     return Canis::Color(0.93f, 0.38f, 0.67f, 1.0f);
+}
+
+Canis::Color InventoryBarUI::GetSlotColor(bool _selected) const
+{
+    if (_selected)
+        return Canis::Color(0.28f, 0.38f, 0.52f, 1.0f);
+
+    return Canis::Color(0.14f, 0.17f, 0.21f, 0.95f);
 }

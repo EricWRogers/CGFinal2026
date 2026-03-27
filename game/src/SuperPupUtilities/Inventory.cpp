@@ -43,8 +43,14 @@ namespace SuperPupUtilities
     void Inventory::Update(float _dt) {}
 
     void Inventory::Add(I_Item &_item, int _amount) {
-        if (Slot* slot = GetSlot(_item.GetName())) {
+        Add(_item.GetName(), _amount);
+    }
+
+    void Inventory::Add(const std::string &_name, int _amount)
+    {
+        if (Slot* slot = GetSlot(_name)) {
             slot->count += _amount;
+            ClampSelectedSlotIndex();
             return;
         }
 
@@ -52,9 +58,10 @@ namespace SuperPupUtilities
             Debug::Warning("Called Inventory::Add with _amount: %i", _amount);
         
         Slot slot;
-        slot.name = _item.GetName();
+        slot.name = _name;
         slot.count = _amount;
         m_slots.push_back(slot);
+        ClampSelectedSlotIndex();
     }
 
     bool Inventory::Remove(std::string _name, int _amount)
@@ -87,6 +94,7 @@ namespace SuperPupUtilities
                     m_slots.erase(m_slots.begin() + index);
             }
 
+            ClampSelectedSlotIndex();
             return true;
         }
 
@@ -100,7 +108,12 @@ namespace SuperPupUtilities
     }
 
     int Inventory::GetCount(I_Item &_item) {
-        if (Slot* slot = GetSlot(_item.GetName()))
+        return GetCount(_item.GetName());
+    }
+
+    int Inventory::GetCount(const std::string &_name) const
+    {
+        if (const Slot* slot = GetSlot(_name))
             return slot->count;
 
         return 0;
@@ -127,11 +140,62 @@ namespace SuperPupUtilities
         return m_slots[static_cast<size_t>(_index)].count;
     }
 
+    int Inventory::GetSelectedSlotIndex() const
+    {
+        if (m_slots.empty())
+            return -1;
+
+        return std::clamp(m_selectedSlotIndex, 0, static_cast<int>(m_slots.size()) - 1);
+    }
+
+    void Inventory::SetSelectedSlotIndex(int _index)
+    {
+        m_selectedSlotIndex = _index;
+        ClampSelectedSlotIndex();
+    }
+
+    void Inventory::SelectRelative(int _delta)
+    {
+        if (m_slots.empty() || _delta == 0)
+            return;
+
+        const int slotCount = static_cast<int>(m_slots.size());
+        int index = GetSelectedSlotIndex();
+        if (index < 0)
+            index = 0;
+
+        index = (index + _delta) % slotCount;
+        if (index < 0)
+            index += slotCount;
+
+        m_selectedSlotIndex = index;
+    }
+
     Inventory::Slot* Inventory::GetSlot(std::string _name) {
         for (int i = 0; i < m_slots.size(); i++)
             if (m_slots[i].name == _name)
                 return &m_slots[i];
 
         return nullptr;
+    }
+
+    const Inventory::Slot* Inventory::GetSlot(std::string _name) const
+    {
+        for (const Slot& slot : m_slots)
+            if (slot.name == _name)
+                return &slot;
+
+        return nullptr;
+    }
+
+    void Inventory::ClampSelectedSlotIndex()
+    {
+        if (m_slots.empty())
+        {
+            m_selectedSlotIndex = 0;
+            return;
+        }
+
+        m_selectedSlotIndex = std::clamp(m_selectedSlotIndex, 0, static_cast<int>(m_slots.size()) - 1);
     }
 }

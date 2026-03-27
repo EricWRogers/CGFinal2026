@@ -49,6 +49,7 @@ public:
     void Resize(int _sizeX, int _sizeY, int _sizeZ);
     void SetBlock(int _x, int _y, int _z, TerrainBlockType _type);
     TerrainBlockType GetBlock(int _x, int _y, int _z) const;
+    bool TryGetBlockCoordsFromWorldPoint(const Canis::Vector3 &_worldPoint, glm::ivec3 &_blockCoords) const;
     bool RebuildMesh();
 
     std::string GetMessage(const InteractionContext &_context) override;

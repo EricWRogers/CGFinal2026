@@ -94,6 +94,26 @@ TerrainBlockType VoxelTerrainChunk::GetBlock(int _x, int _y, int _z) const
     return static_cast<TerrainBlockType>(blocks[static_cast<size_t>(GetIndex(_x, _y, _z))]);
 }
 
+bool VoxelTerrainChunk::TryGetBlockCoordsFromWorldPoint(const Canis::Vector3 &_worldPoint, glm::ivec3 &_blockCoords) const
+{
+    Canis::Vector3 localPoint = _worldPoint;
+    if (entity.HasComponent<Canis::Transform>())
+    {
+        const Canis::Matrix4 inverseModel = glm::inverse(entity.GetComponent<Canis::Transform>().GetModelMatrix());
+        const Canis::Vector4 localPoint4 = inverseModel * Canis::Vector4(_worldPoint, 1.0f);
+        localPoint = Canis::Vector3(localPoint4.x, localPoint4.y, localPoint4.z);
+    }
+
+    const int x = static_cast<int>(std::floor(localPoint.x));
+    const int y = static_cast<int>(std::floor(localPoint.y));
+    const int z = static_cast<int>(std::floor(localPoint.z));
+    if (!IsInBounds(x, y, z))
+        return false;
+
+    _blockCoords = glm::ivec3(x, y, z);
+    return true;
+}
+
 bool VoxelTerrainChunk::RebuildMesh()
 {
     if (runtimeModelId < 0)
@@ -282,25 +302,15 @@ bool VoxelTerrainChunk::ResolveTargetBlock(const InteractionContext &_context, g
     if (_context.hit == nullptr || _context.hit->entity != &entity)
         return false;
 
-    Canis::Vector3 localPoint = _context.hit->point - (_context.hit->normal * 0.01f);
-    if (entity.HasComponent<Canis::Transform>())
-    {
-        const Canis::Matrix4 inverseModel = glm::inverse(entity.GetComponent<Canis::Transform>().GetModelMatrix());
-        const Canis::Vector4 localPoint4 = inverseModel * Canis::Vector4(localPoint, 1.0f);
-        localPoint = Canis::Vector3(localPoint4.x, localPoint4.y, localPoint4.z);
-    }
-
-    const int x = static_cast<int>(std::floor(localPoint.x));
-    const int y = static_cast<int>(std::floor(localPoint.y));
-    const int z = static_cast<int>(std::floor(localPoint.z));
-    if (!IsInBounds(x, y, z))
+    glm::ivec3 blockCoords = glm::ivec3(0);
+    if (!TryGetBlockCoordsFromWorldPoint(_context.hit->point - (_context.hit->normal * 0.01f), blockCoords))
         return false;
 
-    const TerrainBlockType blockType = GetBlock(x, y, z);
+    const TerrainBlockType blockType = GetBlock(blockCoords.x, blockCoords.y, blockCoords.z);
     if (blockType == TerrainBlockType::Air)
         return false;
 
-    _blockCoords = glm::ivec3(x, y, z);
+    _blockCoords = blockCoords;
     _blockType = blockType;
     return true;
 }
