@@ -275,6 +275,85 @@ Entities:
       pickupRadius: 1.15
       logProgress: true
       sprint: false
+  - Entity: 910030
+    Name: LaserPool
+    Tag: ""
+    SuperPupUtilities::SimpleObjectPool:
+      logWarnings: true
+      pools:
+        - code: laser_bullet
+          prefab: assets/prefabs/laser_tag_bullet.scene
+          size: 6
+  - Entity: 910031
+    Name: LaserTagTurret
+    Tag: Hazard
+    Canis::Transform:
+      active: true
+      position: [0, 0.75, -9.5]
+      rotation: [0, 3.1415927, 0]
+      scale: [1, 1.4, 1]
+      parent: 0
+      children:
+        - 910032
+    Canis::Rigidbody:
+      active: true
+      motionType: 0
+      mass: 1
+      friction: 0.7
+      restitution: 0
+      linearDamping: 0.05
+      angularDamping: 0.05
+      useGravity: false
+      isSensor: false
+      layer: 1
+      mask: 4294967295
+      allowSleeping: true
+      lockRotationX: false
+      lockRotationY: false
+      lockRotationZ: false
+      linearVelocity: [0, 0, 0]
+      angularVelocity: [0, 0, 0]
+    Canis::BoxCollider:
+      active: true
+      size: [1, 1, 1]
+    Canis::Material:
+      color: [0.82, 0.19, 0.22, 1]
+      MaterialAsset:
+        uuid: 17490362529814420531
+    Canis::Model:
+      color: [0.82, 0.19, 0.22, 1]
+      ModelAsset:
+        uuid: 17154083321347000101
+    RollABall::LaserTagTurret:
+      targetTag: Player
+      poolCode: laser_bullet
+      fireInterval: 1.75
+      turnSpeedDegrees: 120
+      fireAngleThresholdDegrees: 10
+      muzzleOffset: [0, 0.08, 1.25]
+      projectileSpeed: 14
+      projectileLifeTime: 4
+      projectileHitImpulse: 6
+      logShots: false
+  - Entity: 910032
+    Name: LaserTagTurret_Barrel
+    Tag: ""
+    Canis::Transform:
+      active: true
+      position: [0, 0.05, -0.9]
+      rotation: [0, 0, 0]
+      scale: [0.35, 0.2, 1.4]
+      parent: 910031
+      children:
+        []
+    Canis::Material:
+      color: [0.97, 0.77, 0.32, 1]
+      MaterialAsset:
+        uuid: 17490362529814420531
+    Canis::Model:
+      color: [0.97, 0.77, 0.32, 1]
+      ModelAsset:
+        uuid: 17154083321347000101
   - Entity: 910100
     Name: Pickup_00
     Tag: Pickup
