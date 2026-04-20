@@ -37,7 +37,7 @@ Entities:
       position: [0, -0.5, 0]
       rotation: [0, 0, 0]
       scale: [24, 1, 24]
-      parent: 0
+      parent: 16495376888019668401
       children:
         []
     Canis::Rigidbody:
@@ -77,7 +77,7 @@ Entities:
       position: [0, 1, -12]
       rotation: [0, 0, 0]
       scale: [24, 2, 1]
-      parent: 0
+      parent: 16495376888019668401
       children:
         []
     Canis::Rigidbody:
@@ -117,7 +117,7 @@ Entities:
       position: [0, 1, 12]
       rotation: [0, 0, 0]
       scale: [24, 2, 1]
-      parent: 0
+      parent: 16495376888019668401
       children:
         []
     Canis::Rigidbody:
@@ -157,7 +157,7 @@ Entities:
       position: [-12, 1, 0]
       rotation: [0, 0, 0]
       scale: [1, 2, 24]
-      parent: 0
+      parent: 16495376888019668401
       children:
         []
     Canis::Rigidbody:
@@ -197,7 +197,7 @@ Entities:
       position: [12, 1, 0]
       rotation: [0, 0, 0]
       scale: [1, 2, 24]
-      parent: 0
+      parent: 16495376888019668401
       children:
         []
     Canis::Rigidbody:
@@ -369,7 +369,7 @@ Entities:
       position: [-6, 0.8, -6]
       rotation: [0, 0, 0]
       scale: [0.7, 0.7, 0.7]
-      parent: 0
+      parent: 8887981279634208433
       children:
         []
     Canis::Rigidbody:
@@ -411,7 +411,7 @@ Entities:
       position: [0, 0.8, -6]
       rotation: [0, 0, 0]
       scale: [0.7, 0.7, 0.7]
-      parent: 0
+      parent: 8887981279634208433
       children:
         []
     Canis::Rigidbody:
@@ -453,7 +453,7 @@ Entities:
       position: [6, 0.8, -6]
       rotation: [0, 0, 0]
       scale: [0.7, 0.7, 0.7]
-      parent: 0
+      parent: 8887981279634208433
       children:
         []
     Canis::Rigidbody:
@@ -495,7 +495,7 @@ Entities:
       position: [-6, 0.8, 0]
       rotation: [0, 0, 0]
       scale: [0.7, 0.7, 0.7]
-      parent: 0
+      parent: 8887981279634208433
       children:
         []
     Canis::Rigidbody:
@@ -537,7 +537,7 @@ Entities:
       position: [6, 0.8, 0]
       rotation: [0, 0, 0]
       scale: [0.7, 0.7, 0.7]
-      parent: 0
+      parent: 8887981279634208433
       children:
         []
     Canis::Rigidbody:
@@ -579,7 +579,7 @@ Entities:
       position: [-6, 0.8, 6]
       rotation: [0, 0, 0]
       scale: [0.7, 0.7, 0.7]
-      parent: 0
+      parent: 8887981279634208433
       children:
         []
     Canis::Rigidbody:
@@ -654,14 +654,14 @@ Entities:
       ModelAsset:
         uuid: 17154083321347000101
   - Entity: 910107
-    Name: Pickup_07
+    Name: Pickup_06
     Tag: Pickup
     Canis::Transform:
       active: true
       position: [6, 0.8, 6]
       rotation: [0, 0, 0]
       scale: [0.7, 0.7, 0.7]
-      parent: 0
+      parent: 8887981279634208433
       children:
         []
     Canis::Rigidbody:
@@ -917,7 +917,7 @@ Entities:
     Canis::RectTransform:
       active: true
       position: [0, 0]
-      size: [49.999996, 33]
+      size: [50, 33]
       scale: [1, 1]
       anchorMin: [0.5, 0.5]
       anchorMax: [0.5, 0.5]
@@ -937,3 +937,35 @@ Entities:
       FontAsset:
         uuid: 14618725492368012463
         fontSize: 32
+  - Entity: 16495376888019668401
+    Name: Platform
+    Tag: ""
+    Canis::Transform:
+      active: true
+      position: [0, 0, 0]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+      parent: 0
+      children:
+        - 910010
+        - 910011
+        - 910012
+        - 910013
+        - 910014
+  - Entity: 8887981279634208433
+    Name: Pickups
+    Tag: ""
+    Canis::Transform:
+      active: true
+      position: [0, 0, 0]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+      parent: 0
+      children:
+        - 910100
+        - 910101
+        - 910102
+        - 910103
+        - 910104
+        - 910105
+        - 910107
