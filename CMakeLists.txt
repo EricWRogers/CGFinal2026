@@ -78,7 +78,11 @@ endif()
 #endif()
 #string(APPEND CMAKE_CXX_FLAGS_DEBUG " -gsplit-dwarf")
 
-#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+if(NOT CANIS_PLATFORM_WEB)
+  # GameCode is a shared library on desktop, so all linked static libraries
+  # must be compiled as position-independent code.
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
 
 #set(SDLSHADERCROSS_VENDORED     ON)
 #set(SDLSHADERCROSS_DXC          ON)
