@@ -1,0 +1,14 @@
+shader:
+  path: assets/shaders/pickup_gold.vs
+color: [1, 0.86, 0.18, 1]
+backFaceCulling: true
+specularValue: 1
+roughnessValue: 0.08
+metallicValue: 0.45
+uniforms:
+  pickupFlash:
+    type: float
+    value: 1
+  pickupSparkle:
+    type: float
+    value: 0.8
